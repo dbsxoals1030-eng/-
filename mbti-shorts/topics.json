@@ -1,0 +1,282 @@
+[
+ {
+  "id": 0,
+  "title_prefix": "연애 잘하는",
+  "caption": "연애 잘하는 MBTI",
+  "gauge_label": "연애 고수 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 1,
+  "title_prefix": "화나면 무서운",
+  "caption": "화나면 무서운 MBTI",
+  "gauge_label": "분노 게이지",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 2,
+  "title_prefix": "읽씹 잘하는",
+  "caption": "읽씹 잘하는 MBTI",
+  "gauge_label": "읽씹 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 3,
+  "title_prefix": "집순이·집돌이 1순위",
+  "caption": "집순이·집돌이 1순위 MBTI",
+  "gauge_label": "집콕 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 4,
+  "title_prefix": "눈치 빠른",
+  "caption": "눈치 빠른 MBTI",
+  "gauge_label": "눈치 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 5,
+  "title_prefix": "거짓말 못 하는",
+  "caption": "거짓말 못 하는 MBTI",
+  "gauge_label": "솔직 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 6,
+  "title_prefix": "이별 후 칼같이 정리하는",
+  "caption": "이별 후 칼같이 정리하는 MBTI",
+  "gauge_label": "쿨한 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 7,
+  "title_prefix": "질투 많은",
+  "caption": "질투 많은 MBTI",
+  "gauge_label": "질투 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 8,
+  "title_prefix": "애교 많은",
+  "caption": "애교 많은 MBTI",
+  "gauge_label": "애교 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 9,
+  "title_prefix": "고백 먼저 하는",
+  "caption": "고백 먼저 하는 MBTI",
+  "gauge_label": "직진 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 10,
+  "title_prefix": "소개팅에서 인기 많은",
+  "caption": "소개팅에서 인기 많은 MBTI",
+  "gauge_label": "인기 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 11,
+  "title_prefix": "공부 잘하는",
+  "caption": "공부 잘하는 MBTI",
+  "gauge_label": "집중 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 12,
+  "title_prefix": "지각 잘하는",
+  "caption": "지각 잘하는 MBTI",
+  "gauge_label": "지각 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 13,
+  "title_prefix": "계획 철저한",
+  "caption": "계획 철저한 MBTI",
+  "gauge_label": "계획 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 14,
+  "title_prefix": "플렉스 잘하는",
+  "caption": "플렉스 잘하는 MBTI",
+  "gauge_label": "플렉스 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 15,
+  "title_prefix": "술자리 분위기 메이커",
+  "caption": "술자리 분위기 메이커 MBTI",
+  "gauge_label": "텐션 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 16,
+  "title_prefix": "전화 싫어하는",
+  "caption": "전화 싫어하는 MBTI",
+  "gauge_label": "전화 공포 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 17,
+  "title_prefix": "사랑에 빠지면 올인하는",
+  "caption": "사랑에 빠지면 올인하는 MBTI",
+  "gauge_label": "올인 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 18,
+  "title_prefix": "친구 많은",
+  "caption": "친구 많은 MBTI",
+  "gauge_label": "인싸 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 19,
+  "title_prefix": "혼자 여행 잘 다니는",
+  "caption": "혼자 여행 잘 다니는 MBTI",
+  "gauge_label": "독립 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 20,
+  "title_prefix": "감정 숨기는",
+  "caption": "감정 숨기는 MBTI",
+  "gauge_label": "포커페이스 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 21,
+  "title_prefix": "잔소리 많은",
+  "caption": "잔소리 많은 MBTI",
+  "gauge_label": "잔소리 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 22,
+  "title_prefix": "갈등 피하는",
+  "caption": "갈등 피하는 MBTI",
+  "gauge_label": "회피 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 23,
+  "title_prefix": "연락 자주 하는",
+  "caption": "연락 자주 하는 MBTI",
+  "gauge_label": "연락 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 24,
+  "title_prefix": "스킨십 좋아하는",
+  "caption": "스킨십 좋아하는 MBTI",
+  "gauge_label": "스킨십 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 25,
+  "title_prefix": "예민한",
+  "caption": "예민한 MBTI",
+  "gauge_label": "예민 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 26,
+  "title_prefix": "상사로 만나면 좋은",
+  "caption": "상사로 만나면 좋은 MBTI",
+  "gauge_label": "좋은 상사 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 27,
+  "title_prefix": "팀플 리더 잘하는",
+  "caption": "팀플 리더 잘하는 MBTI",
+  "gauge_label": "리더십 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 28,
+  "title_prefix": "선물 센스 좋은",
+  "caption": "선물 센스 좋은 MBTI",
+  "gauge_label": "센스 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 29,
+  "title_prefix": "눈물 많은",
+  "caption": "눈물 많은 MBTI",
+  "gauge_label": "눈물 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 30,
+  "title_prefix": "유행에 민감한",
+  "caption": "유행에 민감한 MBTI",
+  "gauge_label": "트렌드 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 31,
+  "title_prefix": "즉흥적인",
+  "caption": "즉흥적인 MBTI",
+  "gauge_label": "즉흥 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 32,
+  "title_prefix": "오래 만나도 안 질리는",
+  "caption": "오래 만나도 안 질리는 MBTI",
+  "gauge_label": "매력 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 33,
+  "title_prefix": "첫인상과 다른 반전 매력",
+  "caption": "첫인상과 다른 반전 매력 MBTI",
+  "gauge_label": "반전 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 34,
+  "title_prefix": "다이어트 잘하는",
+  "caption": "다이어트 잘하는 MBTI",
+  "gauge_label": "의지력 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 35,
+  "title_prefix": "정리정돈 잘하는",
+  "caption": "정리정돈 잘하는 MBTI",
+  "gauge_label": "정리 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 36,
+  "title_prefix": "약속 취소되면 좋아하는",
+  "caption": "약속 취소되면 좋아하는 MBTI",
+  "gauge_label": "취소 환호 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 37,
+  "title_prefix": "전 연인 SNS 염탐하는",
+  "caption": "전 연인 SNS 염탐하는 MBTI",
+  "gauge_label": "염탐 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 38,
+  "title_prefix": "썸 오래 타는",
+  "caption": "썸 오래 타는 MBTI",
+  "gauge_label": "썸 지수",
+  "gauge_unit": "%"
+ },
+ {
+  "id": 39,
+  "title_prefix": "한 번 마음 주면 안 변하는",
+  "caption": "한 번 마음 주면 안 변하는 MBTI",
+  "gauge_label": "순정 지수",
+  "gauge_unit": "%"
+ }
+]

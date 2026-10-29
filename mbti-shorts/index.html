@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:P;font-weight:500;src:url(fonts/Pretendard-Medium.otf)}
+@font-face{font-family:P;font-weight:700;src:url(fonts/Pretendard-Bold.otf)}
+@font-face{font-family:P;font-weight:800;src:url(fonts/Pretendard-ExtraBold.otf)}
+@font-face{font-family:P;font-weight:900;src:url(fonts/Pretendard-Black.otf)}
+html,body{margin:0;background:#000}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:P,sans-serif;word-break:keep-all}
+.scene{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden}
+.abs{position:absolute;left:0;top:0;transform-origin:50% 50%;white-space:nowrap}
+.mask{overflow:hidden}
+.eyes{transform-box:fill-box;transform-origin:center}
+.gear{transform-box:fill-box;transform-origin:center}
+</style></head><body>
+<div id="stage"></div>
+<script src="mascots.js"></script>
+<script src="episode.js"></script>
+<script>
+const W=1080,H=1920,DUR=40,MX=90;
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const pr=(t,s,d)=>cl((t-s)/d);
+const eOut5=x=>1-Math.pow(1-x,5);
+const eIO=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const stage=document.getElementById('stage');
+const EP=window.EPISODE;
+function A(parent,css,html='',cls='abs'){const d=document.createElement('div');d.className=cls;d.style.cssText=css;d.innerHTML=html;parent.appendChild(d);return d}
+function T(el,x=0,y=0,s=1,r=0,o=1){
+  if(o<=0.001||s<=0.001){el.style.opacity=0;return}
+  el.style.opacity=o;el.style.transform=`translate(${x}px,${y}px) rotate(${r}deg) scale(${s})`}
+// masked text reveal: wrapper clips, inner slides up
+function RV(parent,css,html){
+  const w=A(parent,css,'','abs mask');const i=document.createElement('div');i.innerHTML=html;i.style.cssText='will-change:transform';w.appendChild(i);
+  return {w,set:p=>{i.style.transform=`translateY(${(1-p)*115}%)`;w.style.visibility=p<=0?'hidden':'visible'}}
+}
+
+// ---------- themes ----------
+const LIGHT={bg:'#ECE8E1',fg:'#1F1F1F',mut:'#8B857B',line:'rgba(31,31,31,.2)',circ:'#E3DED4',shadow:'rgba(31,31,31,.08)',acc:AC};
+const DARK ={bg:'#1B1A19',fg:'#F1EDE6',mut:'#8F8A81',line:'rgba(241,237,230,.22)',circ:'#252321',shadow:'rgba(0,0,0,.4)',acc:'#E2674B'};
+
+// ---------- scenes ----------
+const scenes=[];
+const BEAT=.625, INTRO=3.75, RANK=6.25, OUTRO_START=35;
+
+function mkScene(th){const s=document.createElement('div');s.className='scene';s.style.background=th.bg;stage.appendChild(s);return s}
+const hair=(parent,x,y,w,th)=>A(parent,`left:${x}px;top:${y}px;width:${w}px;height:2px;background:${th.line};transform-origin:0 50%`);
+
+// intro
+(function(){
+  const th=DARK,s=mkScene(th);
+  const cap=RV(s,`left:${MX}px;top:200px;height:50px`,`<div style="font-size:32px;font-weight:600;color:${th.mut};letter-spacing:6px">MBTI · LOVE</div>`);
+  const l1=RV(s,`left:${MX}px;top:330px;height:120px`,`<div style="font-size:92px;font-weight:600;color:${th.fg};letter-spacing:-2px;line-height:1.2">${EP.title_prefix}</div>`);
+  const l2=RV(s,`left:${MX-8}px;top:450px;height:290px`,`<div style="font-size:290px;font-weight:900;color:${th.fg};letter-spacing:-12px;line-height:1.02">MBTI</div>`);
+  const l3=RV(s,`left:${MX-8}px;top:735px;height:250px`,`<div style="font-size:220px;font-weight:900;color:${th.fg};letter-spacing:-8px;line-height:1.1">TOP <span style="color:${th.acc}">5</span></div>`);
+  const hl=hair(s,MX,1030,W-MX*2,th);
+  const keys=EP.ranks.map(r=>r.type);
+  const mins=keys.map((k,i)=>{const d=A(s,`left:${35+i*202}px;top:1090px;width:200px;height:240px;text-align:center`,
+      `<div>${mascot(k,184)}</div><div style="font-size:28px;font-weight:700;color:${th.mut};margin-top:10px;letter-spacing:2px">${k}</div>`);d.style.transformOrigin='50% 80%';return d});
+  const q=RV(s,`left:${MX}px;top:1400px;height:90px`,`<div style="font-size:56px;font-weight:700;color:${th.fg}">${EP.intro_q[0]}<span style="color:${th.acc}">${EP.intro_q[1]}</span>${EP.intro_q[2]}</div>`);
+  scenes.push({el:s,start:0,wipe:false,update:t=>{
+    cap.set(eOut5(pr(t,.05,.7)));l1.set(eOut5(pr(t,.15,.8)));l2.set(eOut5(pr(t,.35,.9)));l3.set(eOut5(pr(t,.8,.9)));
+    hl.style.transform=`scaleX(${eIO(pr(t,1.2,.8))})`;
+    mins.forEach((d,i)=>{const st=1.55+i*.16,p=eOut5(pr(t,st,.8));T(d,0,(1-p)*50+Math.sin(t*2.4+i)*-5,1,0,p);animFaces(d,t,i*.7)});
+    q.set(eOut5(pr(t,2.75,.7)));
+  }});
+})();
+
+// ranks
+const RANKS=EP.ranks.map((r,i)=>Object.assign({n:5-i,tr:r.traits},r));
+RANKS.forEach((R,idx)=>{
+  const th=idx==4?DARK:LIGHT,start=INTRO+idx*RANK,s=mkScene(th);
+  s.insertAdjacentHTML('afterbegin',`<style>.b${idx} b{font-weight:900;color:${th.acc}}</style>`);
+  const cap=RV(s,`left:${MX}px;top:150px;height:44px`,`<div style="font-size:28px;font-weight:700;color:${th.mut};letter-spacing:3px">${EP.caption}</div>`);
+  const cap2=RV(s,`right:${MX}px;left:auto;top:150px;height:44px`,`<div style="font-size:28px;font-weight:700;color:${th.mut};letter-spacing:3px">${R.n} / 5</div>`);
+  const h0=hair(s,MX,208,W-MX*2,th);
+  const no=RV(s,`left:${MX}px;top:240px;height:64px`,`<div style="font-size:42px;font-weight:800;color:${th.acc};letter-spacing:7px">NO.${R.n}</div>`);
+  const ty=RV(s,`left:${MX-6}px;top:300px;height:215px`,`<div style="font-size:196px;font-weight:900;color:${th.fg};letter-spacing:-7px;line-height:1.1">${R.type}</div>`);
+  const nick=RV(s,`left:${MX}px;top:520px;height:84px`,`<div style="font-size:52px;font-weight:600;color:${th.fg};opacity:.78;line-height:1.5">${R.nick}</div>`);
+  const circ=A(s,`left:${540-265}px;top:${862-265}px;width:530px;height:530px;border-radius:50%;background:${th.circ}`);
+  const ground=A(s,`left:${540-190}px;top:1062px;width:380px;height:2px;background:${th.line};transform-origin:50% 50%`);
+  const shadow=A(s,`left:${540-130}px;top:1048px;width:260px;height:26px;border-radius:50%;background:${th.shadow}`);
+  const mw=A(s,`left:320px;top:620px;width:440px;height:440px`,mascot(R.type,440));mw.style.transformOrigin='50% 92%';
+  // gauge
+  const gl=RV(s,`left:${MX}px;top:1118px;height:50px`,`<div style="font-size:32px;font-weight:700;color:${th.mut};letter-spacing:1px;line-height:1.5">${EP.gauge_label}</div>`);
+  const gp=A(s,`right:${MX}px;left:auto;top:1076px;font-size:100px;font-weight:900;color:${th.acc};letter-spacing:-3px;text-align:right;line-height:1`,`0<span style="font-size:44px;letter-spacing:0;margin-left:4px">${EP.gauge_unit}</span>`);
+  const track=A(s,`left:${MX}px;top:1196px;width:${W-MX*2}px;height:6px;border-radius:3px;background:${th.line}`);
+  const fill=A(s,`left:${MX}px;top:1196px;width:0;height:6px;border-radius:3px;background:${th.acc}`);
+  const dot=A(s,`left:${MX}px;top:1182px;width:34px;height:34px;border-radius:50%;background:${th.acc};border:5px solid ${th.bg};box-sizing:border-box`);
+  // traits
+  const rows=R.tr.map((txt,i)=>{
+    const y=1262+i*92;const ln=hair(s,MX,y,W-MX*2,th);
+    const r=RV(s,`left:${MX}px;top:${y+2}px;height:88px;width:${W-MX*2}px`,`<div class="b${idx}" style="font-size:46px;font-weight:700;color:${th.fg};line-height:88px"><span style="display:inline-block;width:84px;font-size:26px;font-weight:800;color:${th.acc};letter-spacing:2px;vertical-align:middle">0${i+1}</span>${txt}</div>`);
+    return {ln,r,st:1.875+i*BEAT}});
+  const tip=A(s,`left:${MX}px;top:1470px;width:${W-MX*2}px;height:104px;border-radius:52px;background:${th.fg};display:flex;align-items:center;padding:0 40px;box-sizing:border-box`,
+    `<div style="font-size:25px;font-weight:900;color:${th.acc};letter-spacing:3px;width:90px">TIP</div><div class="b${idx}" style="font-size:42px;font-weight:700;color:${th.bg}">${R.tip}</div>`);
+  const upd=u=>{
+    cap.set(eOut5(pr(u,.3,.6)));cap2.set(eOut5(pr(u,.3,.6)));h0.style.transform=`scaleX(${eIO(pr(u,.15,.7))})`;
+    no.set(eOut5(pr(u,.35,.6)));ty.set(eOut5(pr(u,.45,.8)));nick.set(eOut5(pr(u,.8,.7)));
+    let p=eOut5(pr(u,.4,1));T(circ,0,0,.7+.3*p,0,pr(u,.4,.4));
+    ground.style.transform=`scaleX(${eIO(pr(u,.6,.7))})`;
+    const bob=Math.sin(u*2*Math.PI/1.25);
+    p=eOut5(pr(u,.55,.9));
+    T(mw,0,(1-p)*70-9*(bob*.5+.5)*p,1,Math.sin(u*2.2)*1.6*p,pr(u,.55,.25));mw.style.transform+=` scale(${1+.02*bob},${1-.015*bob})`;
+    T(shadow,0,0,1-.07*(bob*.5+.5),0,pr(u,.7,.3));
+    animFaces(mw,u,idx*.9);
+    gl.set(eOut5(pr(u,1.2,.6)));
+    const f=eOut5(pr(u,1.3,1.5));
+    gp.innerHTML=Math.round(R.pct*f)+`<span style="font-size:44px;letter-spacing:0;margin-left:4px">${EP.gauge_unit}</span>`;gp.style.opacity=pr(u,1.2,.3);
+    track.style.opacity=pr(u,1.2,.3);
+    const wpx=(W-MX*2)*(R.pct/100)*f;fill.style.width=wpx+'px';fill.style.opacity=pr(u,1.25,.2);
+    dot.style.left=(MX+wpx-17)+'px';dot.style.opacity=pr(u,1.25,.2);
+    rows.forEach(o=>{o.ln.style.transform=`scaleX(${eIO(pr(u,o.st,.6))})`;o.r.set(eOut5(pr(u,o.st+.1,.65)))});
+    const tp=eOut5(pr(u,3.125,.8));T(tip,0,(1-tp)*60,1,0,pr(u,3.125,.3));
+  };
+  scenes.push({el:s,start,wipe:true,update:upd});
+});
+
+// outro
+(function(){
+  const th=LIGHT,s=mkScene(th);
+  const cap=RV(s,`left:${MX}px;top:170px;height:44px`,`<div style="font-size:28px;font-weight:700;color:${th.mut};letter-spacing:3px">${EP.caption} TOP 5</div>`);
+  const title=RV(s,`left:${MX}px;top:240px;height:150px`,`<div style="font-size:112px;font-weight:900;color:${th.fg};letter-spacing:-3px;line-height:1.3">${EP.outro.title[0]}<span style="color:${th.acc}">${EP.outro.title[1]}</span>${EP.outro.title[2]}</div>`);
+  const data=EP.ranks.slice().reverse().map(r=>[r.type,r.nick]);
+  const rows=data.map((d,i)=>{const y=450+i*112;const ln=hair(s,MX,y,W-MX*2,th);
+    const r=RV(s,`left:${MX}px;top:${y+2}px;height:108px;width:${W-MX*2}px`,
+      `<div style="display:flex;align-items:center;height:108px"><div style="width:96px;font-size:30px;font-weight:800;color:${th.acc};letter-spacing:2px">0${i+1}</div><div style="font-size:60px;font-weight:900;color:${th.fg};letter-spacing:-1px;width:260px">${d[0]}</div><div style="font-size:36px;font-weight:600;color:${th.mut}">${d[1]}</div></div>`);
+    return {ln,r,st:.6+i*.2}});
+  const endln=hair(s,MX,450+5*112,W-MX*2,th);
+  const cta=A(s,`left:${MX}px;top:1100px;width:${W-MX*2}px;height:120px;border-radius:60px;background:${th.fg};color:${th.bg};font-size:48px;font-weight:800;display:flex;align-items:center;justify-content:center`,EP.outro.cta);
+  const sub=RV(s,`left:${MX}px;top:1260px;height:70px`,`<div style="font-size:38px;font-weight:600;color:${th.fg};line-height:1.6">${EP.outro.sub}</div>`);
+  const dis=RV(s,`left:${MX}px;top:1360px;height:50px`,`<div style="font-size:28px;font-weight:500;color:${th.mut};line-height:1.6">${EP.outro.disclaimer}</div>`);
+  scenes.push({el:s,start:OUTRO_START,wipe:true,update:v=>{
+    cap.set(eOut5(pr(v,.1,.6)));title.set(eOut5(pr(v,.2,.8)));
+    rows.forEach(o=>{o.ln.style.transform=`scaleX(${eIO(pr(v,o.st,.6))})`;o.r.set(eOut5(pr(v,o.st+.1,.65)))});
+    endln.style.transform=`scaleX(${eIO(pr(v,1.6,.6))})`;
+    const p=eOut5(pr(v,2.2,.8));T(cta,0,(1-p)*60,1,0,pr(v,2.2,.3));
+    sub.set(eOut5(pr(v,2.7,.7)));dis.set(eOut5(pr(v,3.3,.7)));
+  }});
+})();
+
+const prog=A(stage,`left:0;top:0;width:${W}px;height:6px;background:${AC};transform-origin:0 50%;z-index:99`);
+window.render=function(t){
+  scenes.forEach((sc,i)=>{
+    const next=scenes[i+1];
+    const vis=t>=sc.start&&(!next||t<next.start+.9);
+    sc.el.style.display=vis?'block':'none';
+    if(!vis)return;
+    if(sc.wipe){const p=eIO(pr(t,sc.start,.8));sc.el.style.clipPath=p>=1?'none':`inset(${(1-p)*100}% 0 0 0)`}
+    else sc.el.style.clipPath='none';
+    sc.update(t-sc.start);
+  });
+  prog.style.transform=`scaleX(${cl(t/DUR)})`;
+};
+window.fontsReady=Promise.all(['500','700','800','900'].map(w=>document.fonts.load(`${w} 40px P`,'꼬시기MBTI123'))).then(()=>document.fonts.ready);
+render(0);
+</script></body></html>
