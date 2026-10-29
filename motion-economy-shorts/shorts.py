@@ -133,20 +133,21 @@ def g_bars(img, t, p):
     txt(d, (W / 2, 590), p["title"], F(XB_F, 48), SUB)
     rows = p["rows"][:4]
     mx = max(r["value"] for r in rows) or 1
-    gap = (CARD[3] - 120 - 680) // max(1, len(rows) - 1) if len(rows) > 1 else 0
-    gap = min(gap, 250)
+    n = len(rows)
+    gap = min(250, (1130 - 740) // (n - 1)) if n > 1 else 0
+    half = int(min(60, gap * .38)) if n > 1 else 60
     for i, r in enumerate(rows):
         y = 740 + i * gap
         a = seg(t, .2 + i * .5, 1.1 + i * .5)
         w = int(540 * r["value"] / mx * a)
         col = {"up": UP, "down": DOWN}.get(r.get("color", "up"), GRY)
-        d.rounded_rectangle((330, y - 60, 870, y + 60), 24, fill=(232, 232, 236))
-        d.rounded_rectangle((330, y - 60, 330 + max(w, 8), y + 60), 24, fill=col)
+        d.rounded_rectangle((330, y - half, 870, y + half), 24, fill=(232, 232, 236))
+        d.rounded_rectangle((330, y - half, 330 + max(w, 8), y + half), 24, fill=col)
         txt(d, (120, y), r["label"], F(XB_F, 38), INK, anchor="lm")
         if a > .9:
             txt(d, (600, y), r["text"], F(BLACK_F, 56), WHT if w > 300 else INK)
     if p.get("note"):
-        txt(d, (W / 2, CARD[3] - 45), p["note"], F(XB_F, 40), SUB)
+        txt(d, (W / 2, CARD[3] - 40), p["note"], F(XB_F, 38), SUB)
 
 
 def g_bullets(img, t, p):
