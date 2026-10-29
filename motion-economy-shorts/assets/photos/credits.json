@@ -1,0 +1,79 @@
+{
+ "son": {
+  "player": "Son Heung-min",
+  "file": "commons:BFA 2023 -2 Heung-Min Son (cropped).jpg",
+  "artist": "Ujishadow",
+  "license": "CC BY-SA 4.0",
+  "face": [
+   0.46,
+   0.23,
+   0.62
+  ]
+ },
+ "messi": {
+  "player": "Lionel Messi",
+  "file": "commons:Leo Messi Argentina v Egypt 7 July 2026-1.jpg",
+  "artist": "Bryan Berlin",
+  "license": "CC BY-SA 4.0",
+  "face": [
+   0.5,
+   0.2,
+   0.55
+  ]
+ },
+ "ronaldo": {
+  "player": "Cristiano Ronaldo",
+  "file": "commons:Cristiano Ronaldo Croatia v Portugal 2 July 2026-075 (cropped).jpg",
+  "artist": "Bryan Berlin",
+  "license": "CC BY-SA 4.0",
+  "face": [
+   0.5,
+   0.19,
+   0.55
+  ]
+ },
+ "mihajlovic": {
+  "player": "Siniša Mihajlović",
+  "file": "commons:Siniša Mihajlović.JPG",
+  "artist": "Roberto Vicario",
+  "license": "CC BY-SA 3.0",
+  "face": [
+   0.44,
+   0.18,
+   0.45
+  ]
+ },
+ "ronaldinho": {
+  "player": "Ronaldinho",
+  "file": "commons:Ronaldinho in 2019.jpg",
+  "artist": "Marcos Corrêa/PR",
+  "license": "CC BY 2.0",
+  "face": [
+   0.5,
+   0.29,
+   0.7
+  ]
+ },
+ "hagi": {
+  "player": "Gheorghe Hagi",
+  "file": "commons:Lansarea candidaturii Gabrielei Szabo pentru Camera Deputatilor, Voluntari - 04.05 (48) (14270956179) (cropped).jpg",
+  "artist": "Partidul Social Democrat from Romania",
+  "license": "CC BY 2.0",
+  "face": [
+   0.48,
+   0.27,
+   0.62
+  ]
+ },
+ "pirlo": {
+  "player": "Andrea Pirlo",
+  "file": "commons:20150616 - Portugal - Italie - Genève - Andrea Pirlo (cropped).jpg",
+  "artist": "Clément Bucco-Lechat",
+  "license": "CC BY-SA 3.0",
+  "face": [
+   0.4,
+   0.24,
+   0.75
+  ]
+ }
+}

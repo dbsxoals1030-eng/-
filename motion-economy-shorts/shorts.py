@@ -136,11 +136,25 @@ def g_bars(img, t, p):
     n = len(rows)
     gap = min(250, (1130 - 740) // (n - 1)) if n > 1 else 0
     half = int(min(60, gap * .38)) if n > 1 else 60
+    has_photo = any(r.get("photo") for r in rows)
+    if has_photo:
+        half = int(min(75, gap * .4)) if n > 1 else 75
     for i, r in enumerate(rows):
         y = 740 + i * gap
         a = seg(t, .2 + i * .5, 1.1 + i * .5)
-        w = int(540 * r["value"] / mx * a)
         col = {"up": UP, "down": DOWN}.get(r.get("color", "up"), GRY)
+        if r.get("photo"):
+            bx0, bx1 = 300, 900
+            w = int((bx1 - bx0) * r["value"] / mx * a)
+            d.rounded_rectangle((bx0, y - half, bx1, y + half), 24, fill=(232, 232, 236))
+            d.rounded_rectangle((bx0, y - half, bx0 + max(w, 8), y + half), 24, fill=col)
+            paste_photo(img, r["photo"], 190, y, half * 2, alpha=max(a, .01))
+            d = ImageDraw.Draw(img)
+            if a > .9:
+                txt(d, (bx0 + 30, y), r["label"], F(XB_F, 40), WHT, anchor="lm")
+                txt(d, (bx1 - 30, y), r["text"], F(BLACK_F, 58), WHT, anchor="rm")
+            continue
+        w = int(540 * r["value"] / mx * a)
         d.rounded_rectangle((330, y - half, 870, y + half), 24, fill=(232, 232, 236))
         d.rounded_rectangle((330, y - half, 330 + max(w, 8), y + half), 24, fill=col)
         txt(d, (120, y), r["label"], F(XB_F, 38), INK, anchor="lm")
@@ -207,8 +221,88 @@ def g_line(img, t, p):
         txt(d, (W / 2, 1250), p["note"], F(XB_F, 32), SUB)
 
 
+
+# ------------------------------------------------------------------ photos
+PHOTO_DIR = os.path.join(HERE, "assets", "photos")
+_credits = json.load(open(os.path.join(PHOTO_DIR, "credits.json"))) if os.path.exists(os.path.join(PHOTO_DIR, "credits.json")) else {}
+USED_PHOTOS = set()
+
+
+def photo_crop(slug, d, zoom=1.0, shape="circle"):
+    """Face-centred square crop of assets/photos/<slug>.jpg as RGBA, d x d px (circle or rounded square)."""
+    USED_PHOTOS.add(slug)
+    im = Image.open(os.path.join(PHOTO_DIR, slug + ".jpg")).convert("RGB")
+    cx, cy, sf = _credits.get(slug, {}).get("face", [.5, .22, .6])
+    side = min(im.width, im.height, sf * im.width * zoom)
+    left = max(0, min(im.width - side, cx * im.width - side / 2))
+    top = max(0, min(im.height - side, cy * im.height - side / 2))
+    im = im.crop((int(left), int(top), int(left + side), int(top + side))).resize((d, d), Image.LANCZOS).convert("RGBA")
+    m = Image.new("L", (d * 4, d * 4), 0)
+    md = ImageDraw.Draw(m)
+    if shape == "circle":
+        md.ellipse((0, 0, d * 4 - 1, d * 4 - 1), fill=255)
+    else:
+        md.rounded_rectangle((0, 0, d * 4 - 1, d * 4 - 1), d * 4 // 10, fill=255)
+    im.putalpha(m.resize((d, d), Image.LANCZOS))
+    return im
+
+
+def paste_photo(img, slug, cx, cy, d, shape="circle", zoom=1.0, alpha=1.0):
+    ring = Image.new("RGBA", (d + 16, d + 16), (0, 0, 0, 0))
+    rd = ImageDraw.Draw(ring)
+    if shape == "circle":
+        rd.ellipse((0, 0, d + 15, d + 15), fill=(255, 255, 255, 255), outline=(200, 200, 205, 255), width=2)
+    else:
+        rd.rounded_rectangle((0, 0, d + 15, d + 15), (d + 16) // 10, fill=(255, 255, 255, 255), outline=(200, 200, 205, 255), width=2)
+    ph = photo_crop(slug, d, zoom, shape)
+    ring.alpha_composite(ph, (8, 8))
+    if alpha < 1:
+        ring.putalpha(ring.getchannel("A").point(lambda v: int(v * alpha)))
+    img.alpha_composite(ring, (int(cx - (d + 16) / 2), int(cy - (d + 16) / 2)))
+
+
+def g_player_card(img, t, p):
+    """{photo, name, big, sub? (\n = 2 lines), badge?, color?:'up'|'ink'} one player: big photo + number."""
+    card(img)
+    a = seg(t, .05, .6)
+    d = int(400 * (.85 + .15 * a))
+    paste_photo(img, p["photo"], W / 2, 745, d, "square", zoom=1.35, alpha=a)
+    dd = ImageDraw.Draw(img)
+    if p.get("badge"):
+        dd.ellipse((W / 2 - 250, 550, W / 2 - 130, 670), fill=UP, outline=WHT, width=6)
+        txt(dd, (W / 2 - 190, 610), p["badge"], F(BLACK_F, 52), WHT)
+    b = seg(t, .5, 1.1)
+    col = {"up": UP, "down": DOWN}.get(p.get("color", "ink"), INK)
+    txt(dd, (W / 2, 985), p["name"], F(XB_F, 54), INK)
+    txt(dd, (W / 2, 1095), p["big"], F(BLACK_F, int(130 * (.85 + .15 * b))), col)
+    for k, line in enumerate(p.get("sub", "").split("\n")):
+        if line:
+            txt(dd, (W / 2, 1195 + k * 44), line, fit(line, XB_F, .80, 32), SUB)
+
+
+def g_collage(img, t, p):
+    """{title?, photos:[{photo, label}]} up to 8 round portraits (4 per row)."""
+    card(img)
+    d = ImageDraw.Draw(img)
+    if p.get("title"):
+        txt(d, (W / 2, 585), p["title"], F(XB_F, 44), SUB)
+    items = p["photos"][:8]
+    rows = [items[:4], items[4:]]
+    for ri, row in enumerate(rows):
+        for i, it in enumerate(row):
+            k = ri * 4 + i
+            a = seg(t, .1 + k * .12, .5 + k * .12)
+            if a <= 0:
+                continue
+            cx = W / 2 + (i - (len(row) - 1) / 2) * 220
+            cy = 790 + ri * 285
+            paste_photo(img, it["photo"], cx, cy, int(190 * (.7 + .3 * a)), alpha=a)
+            dd = ImageDraw.Draw(img)
+            txt(dd, (cx, cy + 128), it["label"], fit(it["label"], XB_F, .2, 34), INK)
+
+
 GRAPHICS = {"stat_card": g_stat_card, "stat_grid": g_stat_grid, "bars": g_bars, "bullets": g_bullets,
-            "big_text": g_big_text, "line": g_line}
+            "big_text": g_big_text, "line": g_line, "player_card": g_player_card, "collage": g_collage}
 
 
 # ------------------------------------------------------------------ frames
@@ -233,8 +327,10 @@ def captions(d, text, dur_audio, t):
 
 
 def footer(d, spec):
-    txt(d, (W / 2, 1790), spec.get("channel", "모션 이코노미"), F(XB_F, 40), SUB)
-    txt(d, (W / 2, 1850), spec.get("disclaimer", "※ 투자 판단과 책임은 본인에게 있습니다"), F(XB_F, 28), (110, 110, 120))
+    txt(d, (W / 2, 1770), spec.get("channel", "모션 이코노미"), F(XB_F, 40), SUB)
+    lines = spec.get("disclaimer", "※ 투자 판단과 책임은 본인에게 있습니다").split("\n")
+    for k, line in enumerate(lines):
+        txt(d, (W / 2, 1830 + k * 38), line, F(XB_F, 27), (110, 110, 120))
 
 
 def frame(spec, sc, t, dur_audio):
@@ -263,6 +359,12 @@ def render_scene(args):
 # ------------------------------------------------------------------ audio
 def probe(path):
     return float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path]).decode())
+
+
+def atempo_chain(t):
+    """ffmpeg atempo is safest <= 2.0 per filter: split bigger factors into equal steps."""
+    n = 1 if t <= 2 else 2 if t <= 4 else 3
+    return ",".join([f"atempo={t ** (1 / n):.4f}"] * n)
 
 
 def tts(spec, work):
@@ -305,7 +407,7 @@ def main():
     ins, filt = [], []
     for i in range(len(raws)):
         ins += ["-i", os.path.join(work, f"n{i}.mp3")]
-        filt.append(f"[{i}:a]atempo={tempo},apad=pad_dur={gap}[a{i}]")
+        filt.append(f"[{i}:a]{atempo_chain(tempo)},apad=pad_dur={gap}[a{i}]")
     fc = ";".join(filt) + ";" + "".join(f"[a{i}]" for i in range(len(raws))) + f"concat=n={len(raws)}:v=0:a=1,loudnorm=I=-14:TP=-1.5[out]"
     narr = os.path.join(work, "narration.m4a")
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error"] + ins + ["-filter_complex", fc, "-map", "[out]", narr])
@@ -323,20 +425,57 @@ def main():
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", silent, "-i", narr, "-c:v", "copy", "-c:a", "aac",
                            "-b:a", "192k", "-shortest", video])
 
-    # thumbnail: house-style headline + first scene's graphic (final state) as the hero card
+    # thumbnail: house-style headline + (Son-style) portrait photo or first scene's graphic as hero
     th = spec.get("thumb") or {}
     first = spec["scenes"][0]
     canvas = backdrop()
-    hero = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    GRAPHICS[first["graphic"]["type"]](hero, 99.0, first["graphic"])
-    hero = hero.crop(CARD).convert("RGBA")
-    s = 1.12
-    hero = hero.resize((int(hero.width * s), int(hero.height * s)), Image.LANCZOS)
-    canvas.alpha_composite(hero, ((W - hero.width) // 2, 640))
+    if th.get("photo"):
+        USED_PHOTOS.add(th["photo"])
+        ph = Image.open(os.path.join(PHOTO_DIR, th["photo"] + ".jpg")).convert("RGBA")
+        top = int(H * .23)
+        bw, bh = W, H - top
+        sc = max(bw / ph.width, bh / ph.height)
+        ph = ph.resize((int(ph.width * sc) + 1, int(ph.height * sc) + 1), Image.LANCZOS)
+        l = (ph.width - bw) // 2
+        ph = ph.crop((l, 0, l + bw, bh))  # anchor top so the head is kept
+        fade = int(bh * .10)
+        mk = Image.new("L", (bw, bh), 255)
+        for y in range(fade):
+            ImageDraw.Draw(mk).line([(0, y), (bw, y)], fill=int(255 * y / fade))
+        ph.putalpha(mk)
+        canvas.alpha_composite(ph, (0, top))
+        if th.get("badge"):
+            bd = ImageDraw.Draw(canvas)
+            bd.rounded_rectangle((90, 1660, 990, 1810), 48, fill=UP, outline=WHT, width=8)
+            txt(bd, (W / 2, 1735), th["badge"], fit(th["badge"], BLACK_F, .78, 84), WHT, 6)
+    else:
+        hero = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        GRAPHICS[first["graphic"]["type"]](hero, 99.0, first["graphic"])
+        hero = hero.crop(CARD).convert("RGBA")
+        s = 1.12
+        hero = hero.resize((int(hero.width * s), int(hero.height * s)), Image.LANCZOS)
+        canvas.alpha_composite(hero, ((W - hero.width) // 2, 640))
     for (color, frac, cy, mx), text in zip(mt.LINES, [th.get("line1", first["head"][0]), th.get("line2", first["head"][1]), th.get("tag", "")]):
         if text:
             mt.draw_line(canvas, text, color, frac, cy, mx)
     canvas.convert("RGB").save(os.path.join(out, "thumbnail.png"))
+    # photo credits (CC BY / CC BY-SA require attribution): paste into the video description
+    def _collect(o):
+        if isinstance(o, dict):
+            for k, v in o.items():
+                if k == "photo" and isinstance(v, str):
+                    USED_PHOTOS.add(v)
+                _collect(v)
+        elif isinstance(o, list):
+            for v in o:
+                _collect(v)
+    _collect(spec)
+    if USED_PHOTOS:
+        lines = ["사진 출처: Wikimedia Commons"]
+        for slug in sorted(USED_PHOTOS):
+            c = _credits.get(slug, {})
+            lines.append(f"- {c.get('player', slug)}: {c.get('artist', '?')} / {c.get('license', '?')} / {c.get('file', '')}")
+        open(os.path.join(out, "credits.txt"), "w").write("\n".join(lines) + "\n")
     print("DONE", video, f"{probe(video):.1f}s")
 
 
