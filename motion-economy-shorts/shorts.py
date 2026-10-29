@@ -148,7 +148,7 @@ def g_bars(img, t, p):
             w = int((bx1 - bx0) * r["value"] / mx * a)
             d.rounded_rectangle((bx0, y - half, bx1, y + half), 24, fill=(232, 232, 236))
             d.rounded_rectangle((bx0, y - half, bx0 + max(w, 8), y + half), 24, fill=col)
-            paste_photo(img, r["photo"], 190, y, half * 2, alpha=max(a, .01))
+            paste_photo(img, r["photo"], 190, y, half * 2, zoom=1.2, alpha=max(a, .01))
             d = ImageDraw.Draw(img)
             if a > .9:
                 txt(d, (bx0 + 30, y), r["label"], F(XB_F, 40), WHT, anchor="lm")
@@ -228,7 +228,7 @@ _credits = json.load(open(os.path.join(PHOTO_DIR, "credits.json"))) if os.path.e
 USED_PHOTOS = set()
 
 
-def photo_crop(slug, d, zoom=1.0, shape="circle"):
+def photo_crop(slug, d, zoom=1.0, shape="square"):
     """Face-centred square crop of assets/photos/<slug>.jpg as RGBA, d x d px (circle or rounded square)."""
     USED_PHOTOS.add(slug)
     im = Image.open(os.path.join(PHOTO_DIR, slug + ".jpg")).convert("RGB")
@@ -247,7 +247,7 @@ def photo_crop(slug, d, zoom=1.0, shape="circle"):
     return im
 
 
-def paste_photo(img, slug, cx, cy, d, shape="circle", zoom=1.0, alpha=1.0):
+def paste_photo(img, slug, cx, cy, d, shape="square", zoom=1.0, alpha=1.0):
     ring = Image.new("RGBA", (d + 16, d + 16), (0, 0, 0, 0))
     rd = ImageDraw.Draw(ring)
     if shape == "circle":
@@ -296,7 +296,7 @@ def g_collage(img, t, p):
                 continue
             cx = W / 2 + (i - (len(row) - 1) / 2) * 220
             cy = 790 + ri * 285
-            paste_photo(img, it["photo"], cx, cy, int(190 * (.7 + .3 * a)), alpha=a)
+            paste_photo(img, it["photo"], cx, cy, int(190 * (.7 + .3 * a)), zoom=1.2, alpha=a)
             dd = ImageDraw.Draw(img)
             txt(dd, (cx, cy + 128), it["label"], fit(it["label"], XB_F, .2, 34), INK)
 
@@ -327,10 +327,13 @@ def captions(d, text, dur_audio, t):
 
 
 def footer(d, spec):
-    txt(d, (W / 2, 1770), spec.get("channel", "모션 이코노미"), F(XB_F, 40), SUB)
+    channel = spec.get("channel", "모션 이코노미")
+    if channel:
+        txt(d, (W / 2, 1770), channel, F(XB_F, 40), SUB)
     lines = spec.get("disclaimer", "※ 투자 판단과 책임은 본인에게 있습니다").split("\n")
+    base = 1830 if channel else 1800
     for k, line in enumerate(lines):
-        txt(d, (W / 2, 1830 + k * 38), line, F(XB_F, 27), (110, 110, 120))
+        txt(d, (W / 2, base + k * 38), line, F(XB_F, 27), (110, 110, 120))
 
 
 def frame(spec, sc, t, dur_audio):
