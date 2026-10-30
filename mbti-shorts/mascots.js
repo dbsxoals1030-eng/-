@@ -15,13 +15,32 @@ ISTJ:()=>`${feet()}
 <circle cx="147" cy="204" r="38" fill="none" ${sw}/><circle cx="253" cy="204" r="38" fill="none" ${sw}/><path d="M185 202 H215" ${sw} fill="none"/>
 ${dots(206,8,147,253)}<path d="M184 278 H216" ${sw} fill="none"/>
 <path d="M200 306 l-14 12 l7 30 l7 8 l7 -8 l7 -30z" fill="${AC}" ${sw}/>`,
-ISTP:()=>`<path d="M340 292 Q402 272 388 208" ${sw} fill="none"/>
+ISTP:(o={})=>{
+const mood=o.mood||'normal';
+const dotsE=`<circle cx="145" cy="218" r="9" fill="${K}"/><circle cx="255" cy="218" r="9" fill="${K}"/>`;
+const eyes={
+ normal:`${dotsE}<path d="M116 204 H174 M226 204 H284" ${sw} fill="none"/>`,
+ sleepy:`<path d="M118 216 Q145 238 172 216 M228 216 Q255 238 282 216" ${sw} fill="none"/>`,
+ annoyed:`<circle cx="145" cy="224" r="9" fill="${K}"/><circle cx="255" cy="224" r="9" fill="${K}"/><path d="M114 194 L176 210 M286 194 L224 210" ${sw} fill="none"/>`,
+ shock:`<circle cx="145" cy="214" r="19" fill="#fff" ${sw}/><circle cx="145" cy="214" r="6" fill="${K}"/><circle cx="255" cy="214" r="19" fill="#fff" ${sw}/><circle cx="255" cy="214" r="6" fill="${K}"/><path d="M122 178 Q145 164 168 178 M232 178 Q255 164 278 178" ${sw} fill="none"/>`,
+ smirk:`${dotsE}<path d="M116 204 H174 M226 208 L284 196" ${sw} fill="none"/>`,
+ sweat:`${dotsE}<path d="M116 204 H174 M226 204 H284" ${sw} fill="none"/>`
+};
+const mouths={
+ normal:`<path d="M184 264 Q192 274 200 264 Q208 274 216 264" ${sw} fill="none"/>`,
+ sleepy:`<path d="M184 264 Q192 274 200 264 Q208 274 216 264" ${sw} fill="none"/>`,
+ annoyed:`<path d="M184 272 Q200 260 216 272" ${sw} fill="none"/>`,
+ shock:`<ellipse cx="200" cy="270" rx="10" ry="13" fill="${K}"/>`,
+ smirk:`<path d="M178 268 Q206 284 236 256" ${sw} fill="none"/>`,
+ sweat:`<path d="M182 268 Q191 258 200 268 Q209 278 218 268" ${sw} fill="none"/>`
+};
+const extra=mood==='sweat'?`<path d="M310 150 Q294 182 310 192 Q328 182 310 150Z" fill="${AC}" ${sw}/>`:'';
+return `<path d="M340 292 Q402 272 388 208" ${sw} fill="none"/>
 <path d="M86 150 L96 52 L172 96" fill="${F}" ${sw}/><path d="M314 150 L304 52 L228 96" fill="${F}" ${sw}/>
 <path d="M104 112 L107 80 L136 98Z" fill="${AC}"/><path d="M296 112 L293 80 L264 98Z" fill="${AC}"/>
 <ellipse cx="200" cy="226" rx="150" ry="126" fill="${F}" ${sw}/>
-<g class="eyes"><circle cx="145" cy="218" r="9" fill="${K}"/><circle cx="255" cy="218" r="9" fill="${K}"/><path d="M116 204 H174 M226 204 H284" ${sw} fill="none"/></g>
-<path d="M184 264 Q192 274 200 264 Q208 274 216 264" ${sw} fill="none"/>
-<circle cx="86" cy="248" r="12" fill="${AC}"/><path d="M86 260 Q74 306 116 334" stroke="${AC}" stroke-width="5" fill="none" stroke-linecap="round"/>${feet(350)}`,
+<g class="eyes">${eyes[mood]||eyes.normal}</g>${mouths[mood]||mouths.normal}${extra}
+<circle cx="86" cy="248" r="12" fill="${AC}"/><path d="M86 260 Q74 306 116 334" stroke="${AC}" stroke-width="5" fill="none" stroke-linecap="round"/>${feet(350)}`},
 INFJ:()=>`${feet(362)}${bodyC}
 <g class="eyes"><path d="M120 210 Q148 240 176 210 M224 210 Q252 240 280 210" ${sw} fill="none"/></g>
 <path d="M186 262 Q200 273 214 262" ${sw} fill="none"/>
@@ -99,8 +118,34 @@ ESFP:()=>`${feet()}${bodyC}
 ${dots(210)}<path d="M150 250 Q200 316 250 250Z" fill="${K}" ${sw}/><path d="M176 286 Q200 270 224 286 Q200 306 176 286Z" fill="${AC}"/>
 ${blush(246,96,304)}${star(62,100,.6,AC)}${star(344,120,.5,AC)}`
 };
-function mascot(key,size){return `<svg viewBox="0 0 400 400" width="${size}" height="${size}" style="overflow:visible;display:block">${M[key]()}</svg>`}
+function mascot(key,size,opts){return `<svg viewBox="0 0 400 400" width="${size}" height="${size}" style="overflow:visible;display:block">${M[key](opts||{})}</svg>`}
 function animFaces(root,t,off=0){
   root.querySelectorAll('.eyes').forEach(e=>{const p=(t+off)%3.6;const k=p<.14?1-Math.sin(p/.14*Math.PI)*.9:1;e.style.transform=`scaleY(${k})`});
   root.querySelectorAll('.gear').forEach(g=>g.style.transform=`rotate(${t*70}deg)`);
 }
+
+// ---- small line icons (100x100) for list episodes ----
+const ICON={
+phone:`<rect x="28" y="8" width="44" height="84" rx="10" fill="${F}" ${sw}/><path d="M44 78 h12" ${sw} fill="none"/><circle cx="70" cy="16" r="11" fill="${AC}"/>`,
+chat:`<path d="M10 16 H90 V66 H44 L26 86 V66 H10Z" fill="${F}" ${sw}/><path d="M28 36 H72 M28 50 H56" ${sw} fill="none"/><circle cx="88" cy="14" r="9" fill="${AC}"/>`,
+calendar:`<rect x="12" y="20" width="76" height="68" rx="10" fill="${F}" ${sw}/><path d="M12 42 H88 M32 10 V28 M68 10 V28" ${sw} fill="none"/><rect x="28" y="54" width="18" height="18" rx="4" fill="${AC}"/>`,
+clock:`<circle cx="50" cy="50" r="38" fill="${F}" ${sw}/><path d="M50 26 V50 L66 60" ${sw} fill="none"/><circle cx="50" cy="50" r="5" fill="${AC}"/>`,
+moon:`<path d="M62 10 A40 40 0 1 0 90 62 A32 32 0 0 1 62 10Z" fill="${AC}" ${sw}/>`+`<path transform="translate(80 24) scale(.5)" d="M0 -30 Q4 -4 30 0 Q4 4 0 30 Q-4 4 -30 0 Q-4 -4 0 -30Z" fill="${K}"/>`,
+door:`<rect x="24" y="8" width="52" height="86" rx="6" fill="${F}" ${sw}/><circle cx="62" cy="52" r="6" fill="${AC}"/><path d="M84 28 l10 -6 M86 52 h12 M84 76 l10 6" ${sw} fill="none"/>`,
+heart:`<path transform="translate(50 56) scale(1.5)" d="M0 14 C-34 -8 -26 -38 0 -20 C26 -38 34 -8 0 14Z" fill="${AC}" ${sw}/>`,
+crack:`<path transform="translate(50 56) scale(1.5)" d="M0 14 C-34 -8 -26 -38 0 -20 C26 -38 34 -8 0 14Z" fill="${AC}" ${sw}/><path d="M52 24 L42 46 L58 56 L46 78" stroke="${K}" stroke-width="5" fill="none" stroke-linejoin="round"/>`,
+headphones:`<path d="M16 58 V50 a34 34 0 0 1 68 0 V58" ${sw} fill="none"/><rect x="8" y="54" width="22" height="34" rx="9" fill="${AC}" ${sw}/><rect x="70" y="54" width="22" height="34" rx="9" fill="${AC}" ${sw}/>`,
+cup:`<path d="M16 38 H70 V66 Q70 88 43 88 Q16 88 16 66Z" fill="${F}" ${sw}/><path d="M70 46 h8 a10 10 0 0 1 0 20 h-8" ${sw} fill="none"/><path d="M30 28 q-6 -8 0 -16 M46 28 q-6 -8 0 -16" stroke="${AC}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+battery:`<rect x="8" y="30" width="76" height="42" rx="9" fill="${F}" ${sw}/><rect x="84" y="42" width="8" height="18" rx="3" fill="${K}"/><rect x="15" y="37" width="16" height="28" rx="4" fill="${AC}"/>`,
+hourglass:`<path d="M24 10 H76 M24 90 H76 M30 10 Q30 44 50 50 Q70 44 70 10 M30 90 Q30 56 50 50 Q70 56 70 90" ${sw} fill="none"/><path d="M38 84 H62 L50 66Z" fill="${AC}"/>`,
+question:`<path d="M30 34 Q30 12 52 12 Q74 12 74 32 Q74 46 56 54 Q50 58 50 68" ${sw} fill="none"/><circle cx="50" cy="86" r="7" fill="${AC}"/>`,
+exclaim:`<path d="M50 12 V60" stroke="${AC}" stroke-width="15" stroke-linecap="round"/><circle cx="50" cy="84" r="9" fill="${AC}"/>`,
+eye:`<path d="M6 50 Q50 6 94 50 Q50 94 6 50Z" fill="${F}" ${sw}/><circle cx="50" cy="50" r="17" fill="${AC}" ${sw}/><circle cx="56" cy="44" r="5" fill="#fff"/>`,
+mail:`<rect x="8" y="22" width="84" height="58" rx="9" fill="${F}" ${sw}/><path d="M10 28 L50 58 L90 28" ${sw} fill="none"/><circle cx="88" cy="22" r="10" fill="${AC}"/>`,
+bag:`<path d="M20 34 H80 L88 90 H12Z" fill="${F}" ${sw}/><path d="M34 34 V28 a16 16 0 0 1 32 0 V34" ${sw} fill="none"/><circle cx="50" cy="62" r="9" fill="${AC}"/>`,
+star:`<path transform="translate(46 54) scale(1.4)" d="M0 -30 Q4 -4 30 0 Q4 4 0 30 Q-4 4 -30 0 Q-4 -4 0 -30Z" fill="${AC}"/><path transform="translate(82 20) scale(.5)" d="M0 -30 Q4 -4 30 0 Q4 4 0 30 Q-4 4 -30 0 Q-4 -4 0 -30Z" fill="${K}"/>`,
+flag:`<path d="M24 94 V10" ${sw} fill="none"/><path d="M24 12 H84 L70 32 L84 52 H24Z" fill="${AC}" ${sw}/>`,
+key:`<circle cx="32" cy="36" r="22" fill="${F}" ${sw}/><circle cx="32" cy="36" r="7" fill="${AC}"/><path d="M48 52 L90 94 M72 76 l10 -10 M82 86 l8 -8" ${sw} fill="none"/>`,
+sofa:`<path d="M12 46 Q12 32 26 32 H74 Q88 32 88 46 V70 H12Z" fill="${F}" ${sw}/><rect x="6" y="50" width="20" height="30" rx="9" fill="${AC}" ${sw}/><rect x="74" y="50" width="20" height="30" rx="9" fill="${AC}" ${sw}/><path d="M24 84 v8 M76 84 v8" ${sw} fill="none"/>`
+};
+function icon(name,size){return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" style="overflow:visible;display:block">${ICON[name]||ICON.star}</svg>`}

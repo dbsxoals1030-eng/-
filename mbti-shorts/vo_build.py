@@ -12,12 +12,23 @@ def rk(i): return RANK_START + i * 6.25
 RANK_START = 3.75
 
 def build_lines(ep):
-    L = [(0.10, 2.75, ep['intro_voice'][0]), (2.85, 3.72, ep['intro_voice'][1])]
-    for i, r in enumerate(ep['ranks']):
-        s = rk(i); a, b, c = r['voice']
-        L += [(s + .15, s + 1.75, a), (s + 1.85, s + 4.15, b), (s + 4.25, s + 5.95, c)]
+    mode = ep.get('mode', 'ranking')
+    items = ep['items'] if mode == 'list' else ep['ranks']
+    n = len(items)
+    item = int((40 - 3.75 - 5) / .625 / n + 1e-9) * .625
+    out0 = 3.75 + n * item
+    iv = ep['intro_voice']
+    L = [(0.10, 3.0 if len(iv) > 1 else 3.6, iv[0])]
+    if len(iv) > 1 and iv[1]: L.append((3.05 if True else 2.85, 3.72, iv[1]))
+    for i, r in enumerate(items):
+        s = 3.75 + i * item; v = r['voice']
+        if mode == 'list':
+            e1 = s + min(2.3, item * .45)
+            L += [(s + .1, e1, v[0]), (e1 + .1, s + item - .25, v[1])]
+        else:
+            L += [(s + .15, s + 1.75, v[0]), (s + 1.85, s + 4.15, v[1]), (s + 4.25, s + 5.95, v[2])]
     o = ep['outro']['voice']
-    L += [(OUTRO + .2, OUTRO + 2.2, o[0]), (OUTRO + 2.3, OUTRO + 3.7, o[1]), (OUTRO + 3.75, OUTRO + 4.95, o[2])]
+    L += [(out0 + .2, out0 + 2.2, o[0]), (out0 + 2.3, out0 + 3.7, o[1]), (out0 + 3.75, out0 + 4.95, o[2])]
     return L
 
 music_wav, work, out, episode = sys.argv[1:5]

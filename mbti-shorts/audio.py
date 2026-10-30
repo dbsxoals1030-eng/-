@@ -1,4 +1,4 @@
-import numpy as np, wave, sys
+import numpy as np, wave, sys, json
 SR = 44100
 DUR = 40.0
 BPM = 96
@@ -98,25 +98,41 @@ for cyc in range(0, 10):
         t0 = 3.75 + (cyc * 16 + bt) * BEAT
         if t0 < DUR - 1.5 and t0 > 3.75: add(pluck(n, 1.2, .8), t0, 1.0, pan=.25)
 
-# ---- sfx ----
-starts = [3.75 + i * 6.25 for i in range(5)] + [35.0]
+# ---- sfx (episode-aware) ----
+EP = json.load(open(sys.argv[2], encoding='utf-8')) if len(sys.argv) > 2 else json.load(open(sys.argv[1] + '.none'))
+MODE = EP.get('mode', 'ranking')
+ITEMS = EP['items'] if MODE == 'list' else EP['ranks']
+NI = len(ITEMS)
+ITEM = int((DUR - 3.75 - 5) / BEAT / NI + 1e-9) * BEAT
+OUT0 = 3.75 + NI * ITEM
+starts = [3.75 + i * ITEM for i in range(NI)] + [OUT0]
 for st in starts:
     add(swish(.85), st - .05, 1.0); add(tock(110, 1.2), st + .1, .8)
-for i in range(5):
-    r = 3.75 + i * 6.25
-    add(tick(1500), r + .35, .9); add(tick(1800), r + .5, .8); add(tick(2100), r + .85, .7)
-    add(sweep(1.5, 300, 900), r + 1.3, .9)
-    add(tick(1700), r + 1.975, 1.0); add(tick(1900), r + 2.6, 1.0)
-    add(tock(660, .9), r + 3.2, 1.0)
-    add(tock(440, 1.0), r + 2.8, .0)
-add(bell(88, 2.2), 3.75 + 4 * 6.25 + 3.2, 1.0); add(bell(95, 2.2), 3.75 + 4 * 6.25 + 3.32, .8); add(bell(100, 2.4), 3.75 + 4 * 6.25 + 3.44, .7)
+for i in range(NI):
+    r = 3.75 + i * ITEM
+    if MODE == 'list':
+        add(tick(1500), r + .35, .9); add(tick(1800), r + .5, .8); add(tick(2100), r + .7, .7)
+        add(tick(1700), r + .95, .8); add(tock(660, .9), r + 1.3, 1.0)
+        if ITEMS[i].get('chip'): add(tock(520, .9), r + min(2.4, ITEM - 1.4), 1.0)
+    else:
+        gauge = MODE == 'ranking'
+        add(tick(1500), r + .35, .9); add(tick(1800), r + .5, .8); add(tick(2100), r + .85, .7)
+        if gauge: add(sweep(1.5, 300, 900), r + 1.3, .9)
+        t0 = 1.875 if gauge else 1.25
+        nt = len(ITEMS[i]['traits'])
+        for k in range(nt): add(tick(1700 + k * 150), r + t0 + k * BEAT, 1.0)
+        add(tock(660, .9), r + t0 + nt * BEAT, 1.0)
+last = 3.75 + (NI - 1) * ITEM + (1.9 if MODE == 'list' else 3.2)
+add(bell(88, 2.2), last, 1.0); add(bell(95, 2.2), last + .12, .8); add(bell(100, 2.4), last + .24, .7)
 # intro
 for t0, f in [(.15, 1400), (.4, 1700), (.85, 1900)]: add(tick(f), t0, 1.0)
-for i in range(5): add(tick(1300 + i * 120), 1.55 + i * .16, .8)
+single = MODE == 'list' and not EP.get('intro_types')
+for i in range(1 if single else 5): add(tick(1300 + i * 120), 1.55 + (0 if single else i * .16), .8)
 add(tock(600), 2.75, .9)
 # outro
-for i in range(5): add(tick(1400 + i * 130), 35 + .7 + i * .2, .8)
-add(tock(520), 35 + 2.35, 1.0); add(bell(84, 2.5), 35 + 2.4, .9)
+nrows = len((EP.get('outro') or {}).get('rows') or ITEMS)
+for i in range(nrows): add(tick(1400 + i * 130), OUT0 + .7 + i * .2, .8)
+add(tock(520), OUT0 + 2.35, 1.0); add(bell(84, 2.5), OUT0 + 2.4, .9)
 
 # ---- space: light echo, warmth, limiter, fades ----
 def echo(x, delay, fb, mix):

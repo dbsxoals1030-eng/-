@@ -15,3 +15,6 @@ Channel: **잇팁인데요** (YouTube Shorts, MBTI rankings). Style is fixed —
 4. `./build.sh episodes/<YYYYMMDD>.json /home/user/out_<YYYYMMDD>.mp4` (≈ 5 min). If vo_build prints `WARN too long` or a tempo above ~x1.3, shorten that voice line / re-run. Do not disable TLS verification (tts.py already trusts the sandbox CA).
 5. QA: extract frames with ffmpeg at ~1s, 5s, 17s, 30s, 37s and LOOK at them: no text overflow/overlap, correct types on the right ranks, 40.0s duration, audio stream present. Fix and rebuild if needed.
 6. Deliver with SendUserFile (status proactive, display render): the MP4 and `_thumb.jpg`. Final message in Korean: ranking summary (5→1, one line each), suggested YouTube title (≤ 40 chars, hook first), description (2 lines) and hashtags (#Shorts #MBTI #잇팁인데요 + topic tags). Mention that the ranking is for fun.
+
+## Other formats (use when the topic is not a plain ranking)
+See README "Episode modes". For "ISTP/잇팁 이야기" topics use `mode: "list"` (5 items, or 7 with shorter text), for "MBTI별 …" comparisons without a ranking use `mode: "types"`. Copy the closest example from `episodes/` and keep the same length limits; list-mode voice lines must be short (title line ≤ ~12 syllables, desc line ≤ ~17 syllables for 7-item episodes).
