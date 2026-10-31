@@ -1,0 +1,64 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>
+@font-face{font-family:P;font-weight:700;src:url(fonts/Pretendard-Bold.otf)}
+@font-face{font-family:P;font-weight:800;src:url(fonts/Pretendard-ExtraBold.otf)}
+@font-face{font-family:P;font-weight:900;src:url(fonts/Pretendard-Black.otf)}
+html,body{margin:0;background:#000}
+#st{position:relative;overflow:hidden;font-family:P,sans-serif;background:#1B1A19}
+.abs{position:absolute;left:0;top:0;white-space:nowrap;transform-origin:50% 50%}
+.mask{overflow:hidden}.eyes{transform-box:fill-box;transform-origin:center}
+</style></head><body><div id="st"></div>
+<script src="mascots.js"></script>
+<script>
+// 5-second channel bumper. ?o=h for 16:9 (1920x1080), default vertical 1080x1920.
+const Hz=new URLSearchParams(location.search).get('o')==='h';
+const W=Hz?1920:1080,H=Hz?1080:1920,DUR=5;
+const st=document.getElementById('st');st.style.width=W+'px';st.style.height=H+'px';
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));const pr=(t,s,d)=>cl((t-s)/d);
+const eOut5=x=>1-Math.pow(1-x,5);const eIO=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eEla=x=>x<=0?0:x>=1?1:Math.pow(2,-10*x)*Math.sin((x*10-.75)*(2*Math.PI)/3)+1;
+function A(css,html='',cls='abs'){const d=document.createElement('div');d.className=cls;d.style.cssText=css;d.innerHTML=html;st.appendChild(d);return d}
+function T(el,x=0,y=0,s=1,r=0,o=1){if(o<=.001||s<=.001){el.style.opacity=0;return}el.style.opacity=o;el.style.transform=`translate(${x}px,${y}px) rotate(${r}deg) scale(${s})`}
+function RV(css,html){const w=A(css,'','abs mask');const i=document.createElement('div');i.innerHTML=html;w.appendChild(i);return {w,set:p=>{i.style.transform=`translateY(${(1-p)*118}%)`;w.style.visibility=p<=0?'hidden':'visible'}}}
+function measure(html,css){const d=document.createElement('div');d.style.cssText='position:absolute;left:0;top:0;visibility:hidden;white-space:nowrap;'+css;d.innerHTML=html;st.appendChild(d);const w=d.offsetWidth;d.remove();return w}
+const IV='#F1EDE6',ACC='#E2674B',MUT='#8F8A81';
+let parts=null;
+function build(){
+  const maxW=Hz?880:900;
+  let fs=Hz?210:200;for(;fs>80;fs-=4){const w=measure('잇팁',`font-size:${fs}px;font-weight:900;letter-spacing:-8px`)+measure('인데요',`font-size:${fs}px;font-weight:900;letter-spacing:-8px`);if(w<=maxW)break}
+  const w1=measure('잇팁',`font-size:${fs}px;font-weight:900;letter-spacing:-8px`),w2=measure('인데요',`font-size:${fs}px;font-weight:900;letter-spacing:-8px`),tw=w1+w2;
+  const cs=Hz?560:540,cx=Hz?530:W/2,cy=Hz?H/2:800,tl=Hz?940:(W-tw)/2,tt=Hz?cy-fs*.55:1090,th=Math.round(fs*1.2);
+  const circ=A(`left:${cx-cs*.58}px;top:${cy-cs*.58}px;width:${cs*1.16}px;height:${cs*1.16}px;border-radius:50%;background:#252321`);
+  const ring=A(`left:${cx-cs*.58}px;top:${cy-cs*.58}px;width:${cs*1.16}px;height:${cs*1.16}px;border-radius:50%;border:3px solid ${ACC};box-sizing:border-box`);
+  const mk=m=>{const d=A(`left:${cx-cs/2}px;top:${cy-cs*.5}px;width:${cs}px;height:${cs}px`,mascot('ISTP',cs,{mood:m}));d.style.transformOrigin='50% 92%';return d};
+  const catA=mk('sleepy'),catB=mk('smirk');
+  const sp=A(`left:${cx+cs*.34}px;top:${cy-cs*.5}px;width:90px;height:90px`,`<svg viewBox="-40 -40 80 80" width="90" height="90" style="overflow:visible"><path d="M0 -34 Q4 -5 34 0 Q4 5 0 34 Q-4 5 -34 0 Q-4 -5 0 -34Z" fill="${ACC}"/></svg>`);
+  const t1=RV(`left:${tl}px;top:${tt}px;height:${th}px`,`<div style="font-size:${fs}px;font-weight:900;color:${IV};letter-spacing:-8px;line-height:1.2">잇팁</div>`);
+  const t2=RV(`left:${tl+w1}px;top:${tt}px;height:${th}px`,`<div style="font-size:${fs}px;font-weight:900;color:${ACC};letter-spacing:-8px;line-height:1.2">인데요</div>`);
+  const ly=tt+th+(Hz?6:14);
+  const line=A(`left:${tl+8}px;top:${ly}px;width:${tw-16}px;height:2px;background:rgba(241,237,230,.25);transform-origin:0 50%`);
+  const tag=RV(`left:${tl+8}px;top:${ly+16}px;height:70px`,`<div style="font-size:${Hz?44:42}px;font-weight:700;color:${MUT};letter-spacing:${Hz?5:6}px;line-height:1.5">꼬시기 어려운 MBTI</div>`);
+  const prog=A(`left:0;top:0;width:${W}px;height:6px;background:${ACC};transform-origin:0 50%`);
+  const fade=A(`left:0;top:0;width:${W}px;height:${H}px;background:#1B1A19;opacity:0`);
+  parts={circ,ring,catA,catB,sp,t1,t2,line,tag,prog,fade,cs,cx,cy};
+}
+window.render=function(t){
+  if(!parts)return;const p=parts;
+  const c=eOut5(pr(t,.05,.8));T(p.circ,0,0,.2+.8*c,0,pr(t,.05,.2));
+  const rg=pr(t,.1,1.0);T(p.ring,0,0,.6+.9*eOut5(rg),0,(1-rg)*.9);
+  const bob=Math.sin(t*2*Math.PI/1.25);
+  const pop=eEla(pr(t,.25,.9));
+  const awake=t>=1.15;
+  const hop=awake?Math.max(0,Math.sin(pr(t,1.15,.45)*Math.PI))*-34:0;
+  const sq=1+.02*bob;
+  const place=el=>{T(el,0,(1-Math.min(pop,1.15))*160+hop-7*(bob*.5+.5)*pop,pop,Math.sin(t*2.2)*1.4,pr(t,.25,.12));el.style.transform+=` scale(${sq},${1-.015*bob})`};
+  place(p.catA);place(p.catB);
+  p.catA.style.visibility=awake?'hidden':'visible';p.catB.style.visibility=awake?'visible':'hidden';
+  animFaces(p.catB,t,.4);
+  const s=eEla(pr(t,1.2,.7));T(p.sp,0,0,s,t*40,pr(t,1.2,.1));
+  p.t1.set(eOut5(pr(t,.9,.6)));p.t2.set(eOut5(pr(t,1.1,.6)));
+  p.line.style.transform=`scaleX(${eIO(pr(t,1.75,.6))})`;p.tag.set(eOut5(pr(t,2.1,.6)));
+  p.prog.style.transform=`scaleX(${cl(t/DUR)})`;
+  p.fade.style.opacity=pr(t,4.72,.28);
+};
+window.fontsReady=Promise.all(['700','800','900'].map(w=>document.fonts.load(`${w} 40px P`,'잇팁인데요꼬시기MBTI'))).then(()=>document.fonts.ready).then(()=>{build();render(0)});
+</script></body></html>
