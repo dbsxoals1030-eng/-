@@ -65,7 +65,7 @@ const capRow=(s,th,left,right)=>{
 // ---------- intro ----------
 function buildIntro(){
   const th=DARK,s=mkScene(th);
-  const I=EP.intro||{cap:'MBTI · LOVE',l1:EP.title_prefix,l2:'MBTI',l3:'TOP <b>5</b>'};
+  const I=EP.intro||{cap:'MBTI',l1:EP.title_prefix,l2:'MBTI',l3:'TOP <b>5</b>'};
   const cap=RV(s,`left:${MX}px;top:200px;height:50px`,`<div style="font-size:32px;font-weight:600;color:${th.mut};letter-spacing:6px">${I.cap}</div>`);
   const f1=fitFont(I.l1,92,'font-weight:600;letter-spacing:-2px',W-MX*2),f2=fitFont(I.l2,290,'font-weight:900;letter-spacing:-12px',W-MX*2-10,100),f3=fitFont(I.l3,220,'font-weight:900;letter-spacing:-8px',W-MX*2-10,80);
   let y=330;const h1=Math.round(f1*1.3),h2=Math.round(f2*1.08),h3=Math.round(f3*1.1);

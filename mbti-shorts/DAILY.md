@@ -4,8 +4,8 @@ Channel: **잇팁인데요** (YouTube Shorts, MBTI rankings). Style is fixed —
 
 ## Steps
 1. `TZ=Asia/Seoul date +%F`. Topic index = (days since 2026-10-30) mod `len(topics.json)`; take that entry from `topics.json` (title_prefix, caption, gauge_label, gauge_unit). If the previous day's topic is unknown, that's fine: the rotation never repeats within 40 days.
-2. `pip install -q edge-tts`; `which ffmpeg node`; Playwright + Chromium are preinstalled (never run `playwright install`).
-3. Write `episodes/<YYYYMMDD>.json` (copy `episodes/hard-to-get-top5.json` as the schema). Fill TOP 5 for the topic. Entries are ordered 5th → 1st.
+2. `python3 -m pip install -q numpy edge-tts certifi` (a fresh session has no numpy); `which ffmpeg node`; Playwright + Chromium are preinstalled (never run `playwright install`).
+3. Write `episodes/<YYYYMMDD>.json` (ALWAYS set `intro` with a `cap` that matches the topic, e.g. "MBTI · ANGER") (copy `episodes/hard-to-get-top5.json` as the schema). Fill TOP 5 for the topic. Entries are ordered 5th → 1st.
    - 5 DISTINCT types; pick whichever 5 fit the topic best (any of the 16; mascots exist for all).
    - `pct` increases from 5th to 1st, ending at 95–99 (e.g. 72,80,87,93,98). Stay playful, not insulting; it's an opinion ranking, so the disclaimer stays.
    - `nick` ≤ 9 chars. Each `traits` ≤ 15 chars, wrap 1 keyword in `<b>`. `tip` ≤ 14 chars, wrap 1 keyword in `<b>`.
