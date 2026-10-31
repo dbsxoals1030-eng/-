@@ -13,7 +13,7 @@ Channel: **잇팁인데요** (YouTube Shorts, MBTI rankings). Style is fixed —
    - `voice` per rank = [rank+type, nickname + one trait (≤ 20 chars), tip]. Rank words: 오 위/사 위/삼 위/이 위/대망의 일 위. Spoken types: ISTJ 잇티제, ISFJ 잇프제, INFJ 인프제, INTJ 인티제, ISTP 잇팁, ISFP 잇프피, INFP 인프피, INTP 인팁, ESTP 엣팁, ESFP 엣프피, ENFP 엔프피, ENTP 엔팁, ESTJ 엣티제, ESFJ 엣프제, ENFJ 엔프제, ENTJ 엔티제.
    - `outro`: keep the same CTA/disclaimer/like as the example (title like ["내 MBTI는 ","몇 위","?"]; `like` = "좋아요 누르면 잇팁이 꼬리 살랑살랑" shows a cute like-request pill with the ISTP cat; outro voice = ["내 엠비티아이는 몇 위?","댓글이랑 좋아요, 꾹!","팔로우하면 다음 편도!"]).
 4. `./build.sh episodes/<YYYYMMDD>.json /home/user/out_<YYYYMMDD>.mp4` (≈ 5 min). If vo_build prints `WARN too long` or a tempo above ~x1.3, shorten that voice line / re-run. Do not disable TLS verification (tts.py already trusts the sandbox CA).
-5. QA: extract frames with ffmpeg at ~1s, 5s, 17s, 30s, 37s and LOOK at them: no text overflow/overlap, correct types on the right ranks, 40.0s duration, audio stream present. Fix and rebuild if needed.
+5. QA: extract frames with ffmpeg at ~1s, 5s, 17s, 30s, 37s and LOOK at them: no text overflow/overlap, correct types on the right ranks, 45.0s duration (5s bumper is prepended automatically by build.sh), audio stream present. Fix and rebuild if needed.
 6. Deliver with SendUserFile (status proactive, display render): the MP4 and `_thumb.jpg`. Final message in Korean: ranking summary (5→1, one line each), suggested YouTube title (≤ 40 chars, hook first), description (2 lines) and hashtags (#Shorts #MBTI #잇팁인데요 + topic tags). Mention that the ranking is for fun.
 
 ## Other formats (use when the topic is not a plain ranking)

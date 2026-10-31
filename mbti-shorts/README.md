@@ -1,6 +1,6 @@
 # MBTI Shorts template (minimal editorial style)
 
-40s, 1080x1920, 30fps. HTML motion graphics -> Playwright frames -> ffmpeg, with synthesized BGM and Korean TTS voice-over.
+Every video = 5s channel bumper (channel/itip-bumper-v.mp4, prepended by build.sh) + 40s episode = 45s, 1080x1920, 30fps. HTML motion graphics -> Playwright frames -> ffmpeg, with synthesized BGM and Korean TTS voice-over.
 
 ## Style rules (keep for every MBTI short)
 - Palette: warm greige `#ECE8E1` + charcoal `#1B1A19` + ONE accent terracotta `#D4573B`. No gradients, no emoji, no particles.
